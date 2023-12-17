@@ -1,2 +1,2 @@
 # video_streaming_website
-This is my per project on video streaming service for different shows, cartoons, moview etc.
+This is my pet project on video streaming service for different shows, cartoons, movies etc.
