@@ -2,12 +2,8 @@
 
 {% block content %}
 
-<div style="border: 2px solid #000;">
-    <h1>This is the body</h1>
-    <p>Here you put smth</p>
-
     {% for show in shows %}
-        {% include 'body_snippet.html' with value=show %}
+        <p>{{account}}</p>
     {% empty %}
     <h3>No shows in list</h3>
     {% endfor %}
