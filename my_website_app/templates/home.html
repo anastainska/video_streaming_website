@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div style="border: 2px solid #000;">
+    <h1>This is the body</h1>
+    <p>Here you put smth</p>
+
+    {% for show in shows %}
+        {% include 'body_snippet.html' with value=show %}
+    {% empty %}
+    <h3>No shows in list</h3>
+    {% endfor %}
+</div>
+
+{% endblock content %}
