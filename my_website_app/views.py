@@ -3,7 +3,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 from .models import Show, Folder
 from .forms import *
 
