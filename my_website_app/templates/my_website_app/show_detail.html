@@ -1,0 +1,20 @@
+{% extends './base.html' %}
+{% block content%}
+<h1>Show: {{show.title}}</h1>
+<h4>Genre: {{show.genre}}</h4>
+<h4>Popularity: {{show.popularity}}</h4>
+<h4>Seasons: {{show.seasons}}</h4>
+<h4>Description: {{show.description}}</h4>
+
+{% if show in favourites %}
+<form action="{% url 'remove_from_favorites' show.id %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-primary">Remove from Favourites</button>
+</form>
+{% else %}
+<form action="{% url 'favourite_add' show.id %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-primary">Add to Favourites</button>
+</form>
+{% endif %}
+{% endblock content %}

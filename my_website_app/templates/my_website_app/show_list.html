@@ -1,0 +1,35 @@
+{% extends './base.html' %}
+{% block content%}
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="display-4">Shows</h1>
+    <p class="lead">choose your fighter!!!!!!</p>
+</div>
+<div class="container">
+    <div class="d-flex flex-column">
+        <a href="{% url 'show-create' %}">Add show</a>
+<table>
+    <tr>
+        <th>
+            Shows
+        </th>
+        <th></th>
+    </tr>
+    {% for show in shows %}
+    <tr>
+        <td>
+            {{show.title}}
+        </td>
+        <td>
+            <a href="{% url 'show' show.id %}">View</a>
+            <a href="{% url 'show-update' show.id %}">Edit</a>
+            <a href="{% url 'show-delete' show.id %}">Delete</a>
+        </td>
+    </tr>
+    {% empty %}
+    <h3>No shows in list</h3>
+    {% endfor %}
+</table>
+    </div>
+</div>
+
+{% endblock content %}

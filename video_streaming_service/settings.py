@@ -31,6 +31,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backend.console.EmailBackend' # During development only, needs change
 
 # Application definition
 
@@ -62,7 +64,7 @@ ROOT_URLCONF = 'video_streaming_service.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, '../my_website_app/templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'my_website_app/templates/my_website_app')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

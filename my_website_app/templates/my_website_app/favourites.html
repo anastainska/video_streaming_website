@@ -1,0 +1,38 @@
+{% extends './base.html' %}
+{% block content %}
+
+<div class="container">
+    <section class="jumbotron text-center bg-white">
+        <div class="container">
+            <h1>User Favourites</h1>
+            <p class="lead text-muted">
+                Shows
+            </p>
+        </div>
+    </section>
+    <div>
+        <div class="row">
+            {% for show in favourites %}
+            <div class="col-md-4">
+                <a class="text-dark" href="{{show.get_absolute_url}}">
+                    <div class="card mb-4 box-shadow">
+                        <div class="card-body">
+                            <a href="{% url 'show' show.id %}"><h3 style="color: black">{{show.title}}</h3></a>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div id="favourite-section">
+                                    <a href="{% url 'remove_from_favorites' show.id %}">Remove from favorites</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <li>You have no favorites yet.</li>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock content %}

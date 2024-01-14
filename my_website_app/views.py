@@ -11,10 +11,8 @@ from .forms import *
 # Create your views here.
 
 def home_screen_view(request):
-    context = {}
-    shows = Show.objects.all()
-    context['shows'] = shows
-    return render(request, 'home.html', context)
+    print(request.headers)
+    return render(request, 'base.html', {})
 
 
 def registration_view(request):
