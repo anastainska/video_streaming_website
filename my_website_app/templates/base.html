@@ -2,31 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>let's bingewatch</title>
-    {% if request.user.is_authenticated %}
-        <p><a href="{% url 'shows' %}">Home</a> |
-            <a href="{% url 'account' %}">Account</a> |
-            <a href="{% url 'logout' %}">Logout</a></p>
-        <p>Hello, {{request.user.username}}</p>
-    {% else %}
-        <p>
-            <a href="{% url 'shows' %}">Home</a> |
-            <a href="{% url 'register' %}">Register</a> |
-            <a href="{% url 'login' %}">Login</a> </p>
-    {% endif %}
+    {% include 'header.html' %}
 </head>
 
 <body>
+    <!-- Body -->
+    <style type="text/css">
+        .main{
+        min-height: 100vh;
+        height: 100%;
+        }
+    </style>
+    <div class="main">
+        {% block content %}
 
-{% block content %}
+        {% endblock content %}
+    </div>
+    <!-- End Body -->
 
-{% endblock content %}
-
+    {% include 'footer.html' %}
 </body>
-
-<footer>
-    <hr>
-    <p>anastainska's website | 2024</p>
-</footer>
 
 </html>
