@@ -38,6 +38,9 @@ urlpatterns = [
     path('movies/category/<slug:category_slug>/', movies, name='shows_by_category'),
     path('movies/search/', search, name='search'),
     path('activate/<uidb64>/<token>', activate, name='activate'),
+    path('forgot_password/', forgot_password, name='forgot_password'),
+    path('reset_password_validate/<uidb64>/<token>', reset_password_validate, name='reset_password_validate'),
+    path('reset_password/', reset_password, name='reset_password'),
 
     path('password_change/done/',
          auth_views.PasswordChangeDoneView.as_view(template_name='registration/password_change_done.html'),
