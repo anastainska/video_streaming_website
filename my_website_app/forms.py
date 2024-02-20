@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate
-from .models import Subscriber
+from .models import Subscriber, ReviewRating
 
 
 class RegistrationForm(forms.ModelForm):
@@ -71,3 +71,9 @@ class AccountUpdateForm(forms.ModelForm):
             except Subscriber.DoesNotExist:
                 return username
             raise forms.ValidationError('Username "%s" is already in use.' % account.username)
+
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = ReviewRating
+        fields = ['subject', 'review', 'rating']

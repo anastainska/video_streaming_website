@@ -206,6 +206,30 @@ def reset_password(request):
     return render(request, 'reset_password.html')
 
 
+def submit_review(request, show_id):
+    url = request.META.get('HTTP_REFERER')
+    if request.method =='POST':
+        try:
+            reviews = ReviewRating.objects.get(user__id=request.user.id, show__id=show_id)
+            form = ReviewForm(request.POST, instance=reviews)
+            form.save()
+            messages.success(request, 'Thank you! Your review has been updated.')
+            return redirect(url)
+        except ReviewRating.DoesNotExist:
+            form = ReviewForm(request.POST)
+            if form.is_valid():
+                data = ReviewRating()
+                data.subject = form.cleaned_data['subject']
+                data.rating = form.cleaned_data['rating']
+                data.review = form.cleaned_data['review']
+                data.ip = request.META.get('REMOTE_ADDR')
+                data.show_id = show_id
+                data.user_id = request.user.id
+                data.save()
+                messages.success(request, 'Thank you! Your review has been submitted.')
+                return redirect(url)
+
+
 class ShowListView(ListView):
     model = Show
     context_object_name = 'shows'
@@ -214,6 +238,17 @@ class ShowListView(ListView):
 class ShowDetail(DetailView):
     model = Show
     context_object_name = 'show'
+    template_name = 'show_detail.html'  # Replace with the actual template name
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Get the reviews related to the show
+        show = self.get_object()
+        reviews = ReviewRating.objects.filter(show=show).order_by('-updated_at')
+
+        context['reviews'] = reviews
+        return context
 
 
 class ShowCreate(CreateView):

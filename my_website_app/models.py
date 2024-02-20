@@ -2,7 +2,12 @@ from django.db import models
 from enum import Enum
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from django.db.models import Max
+from django.db.models import Max, Avg, Count
+from django.urls import reverse
+from django.db.models.signals import pre_save, post_delete
+from django.utils.text import slugify
+from django.conf import settings
+from django.dispatch import receiver
 
 
 class Role(Enum):
@@ -100,6 +105,18 @@ class Subscriber(User, AbstractBaseUser):
         return True
 
 
+class Category(models.Model):
+    category_name = models.CharField(max_length=50, unique=True)
+    slug = models.SlugField(max_length=100, unique=True)
+    description = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.category_name
+
+    def get_url(self):
+        return reverse('shows_by_category', args=[self.slug])
+
+
 class Show(models.Model):
     title = models.CharField(max_length=500, null=True, blank=True)
     year = models.IntegerField(null=False, blank=False)
@@ -107,6 +124,8 @@ class Show(models.Model):
     popularity = models.FloatField(validators=[MinValueValidator(0.00), MaxValueValidator(9.99)], null=True, blank=True)
     seasons = models.IntegerField(null=False, blank=False)
     description = models.CharField(max_length=500, null=True, blank=True)
+    poster = models.ImageField(upload_to='images/shows', blank=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -118,6 +137,23 @@ class Show(models.Model):
 
     class Meta:
         ordering = ['popularity']
+
+    def __str__(self):
+        return self.title
+
+    def average_review(self):
+        reviews = ReviewRating.objects.filter(show=self, status=True).aggregate(average=Avg('rating'))
+        avg = 0
+        if reviews['average'] is not None:
+            avg = float(reviews['average'])
+        return avg
+
+    def count_review(self):
+        reviews = ReviewRating.objects.filter(show=self, status=True).aggregate(count=Count('id'))
+        count = 0
+        if reviews['count'] is not None:
+            count = int(reviews['count'])
+        return count
 
 
 class Folder(models.Model):
@@ -134,3 +170,25 @@ class Folder(models.Model):
             self.id = max_id + 1
 
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
+class ReviewRating(models.Model):
+    show = models.ForeignKey(Show, on_delete=models.CASCADE)
+    user = models.ForeignKey(Subscriber, on_delete=models.CASCADE)
+    subject = models.CharField(max_length=100, blank=True)
+    review = models.TextField(max_length=500, blank=True)
+    rating = models.FloatField()
+    ip = models.CharField(max_length=20, blank=True)
+    status = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.subject
+
+
+# def upload_location(instance, filename):
+#     file_path =
