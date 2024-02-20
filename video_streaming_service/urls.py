@@ -34,6 +34,10 @@ urlpatterns = [
     path('show/<int:show_id>/add_to_favorites/', favourite_add, name='favourite_add'),
     path('show/<int:show_id>/remove_from_favorites/', remove_from_favorites, name='remove_from_favorites'),
     path('favourites/', favourite_list, name='favourites'),
+    path('movies/', movies, name='movies'),
+    path('movies/category/<slug:category_slug>/', movies, name='shows_by_category'),
+    path('movies/search/', search, name='search'),
+    path('activate/<uidb64>/<token>', activate, name='activate'),
 
     path('password_change/done/',
          auth_views.PasswordChangeDoneView.as_view(template_name='registration/password_change_done.html'),

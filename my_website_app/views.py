@@ -6,6 +6,16 @@ from django.urls import reverse_lazy
 from django.contrib.auth import login, logout, authenticate
 from .models import Show, Folder
 from .forms import *
+from django.contrib import messages, auth
+from django.http import HttpResponse
+
+# Verification email
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import EmailMessage
 
 
 # Create your views here.
@@ -16,19 +26,35 @@ def home_screen_view(request):
 
 
 def registration_view(request):
-    context = {}
-    if request.POST:
+    if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
-            account = form.save()
-            login(request, account)
-            return redirect('shows')
-        else:
-            context['registration_form'] = form
+            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+
+            user = Subscriber.objects.create_user(username=username, email=email, password=password)
+            user.save()
+
+            # USER ACTIVATION
+            current_site = get_current_site(request)
+            mail_subject = 'Please activate your account'
+            message = render_to_string('account_verification_email.html', {
+                'user': user,
+                'domain': current_site,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': default_token_generator.make_token(user),
+            })
+            to_email = email
+            send_email = EmailMessage(mail_subject, message, to=[to_email])
+            send_email.send()
+            # messages.success(request, 'Please check your email for a verification link.')
+            return redirect('/login/?command=verification&email='+email)
     else:
         form = RegistrationForm()
-        context['registration_form'] = form
+    context = {
+        'form': form,
+    }
     return render(request, 'register.html', context)
 
 
@@ -38,24 +64,20 @@ def logout_view(request):
 
 
 def login_view(request):
-    context = {}
-    user = request.user
-    if user.is_authenticated:
-        return redirect('shows')
-    if request.POST:
-        form = UserAuthenticationForm(request.POST)
-        if form.is_valid():
-            email = request.POST['email']
-            password = request.POST['password']
-            user = authenticate(email=email, password=password)
-            if user:
-                login(request, user)
-                return redirect('shows')
-    else:
-        form = UserAuthenticationForm()
+    if request.method == 'POST':
+        email = request.POST['email']
+        password = request.POST['password']
 
-    context['login_form'] = form
-    return render(request, 'login.html', context)
+        user = auth.authenticate(email=email, password=password)
+
+        if user is not None:
+            auth.login(request, user)
+            # messages.success(request, 'You are now logged in.')
+            return redirect('shows')
+        else:
+            messages.error(request, 'Invalid login credentials.')
+            return redirect('login')
+    return render(request, 'login.html')
 
 
 def account_view(request):
@@ -104,6 +126,23 @@ def favourite_list(request):
     folder, created = Folder.objects.get_or_create(id_subscriber=request.user.subscriber, name='Favourites')
     favourites = folder.favourites.all()
     return render(request, 'favourites.html', {'favourites': favourites})
+
+
+def activate(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = Subscriber._default_manager.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, Subscriber.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, 'Congratulations! Your account is activated.')
+        return redirect('login')
+    else:
+        messages.error(request, 'Invalid activation link')
+        return redirect('register')
 
 
 class ShowListView(ListView):

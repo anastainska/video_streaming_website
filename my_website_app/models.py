@@ -49,6 +49,7 @@ class MyUserManager(BaseUserManager):
             username=username,
         )
         user.is_admin = True
+        user.is_active = True
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
@@ -81,6 +82,7 @@ class Subscriber(User, AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'

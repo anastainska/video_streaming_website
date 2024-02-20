@@ -2,61 +2,46 @@
 
 {% block content%}
 
-<style type="text/css">
-    .form-signin {
-  width: 100%;
-  max-width: 330px;
-  padding: 15px;
-  margin: auto;
-}
-.form-signin .form-control {
-  position: relative;
-  box-sizing: border-box;
-  height: auto;
-  padding: 10px;
-  font-size: 16px;
-}
-.form-signin .form-control:focus {
-  z-index: 2;
-}
-.form-signin input[type="email"] {
-  margin-bottom: -1px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-}
-.form-signin input[type="password"] {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-.h3{
-  text-align: center;
-}
-</style>
+<section class="section-conten padding-y" style="min-height:84vh">
 
-<form class="form-signin" method="post">
-    {% csrf_token %}
-    <h1 class="h3 mb-3 font-weight-normal">Login</h1>
-    <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email address" required
-           autofocus>
-    <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
-    {% for field in login_form %}
-    <p>
-        {% for error in field.errors %}
-    <p style="color: red">{{error}}</p>
-    {% endfor %}
-    </p>
-    {% endfor %}
-    {% if login_form.non_field_errors %}
-    <div style="color:red">
-        <p>{{ login_form.non_field_errors }}</p>
+<!-- ============================ COMPONENT LOGIN   ================================= -->
+    {% if request.GET.command == 'verification' %}
+
+    <div class="container mx-auto alert alert-info text-center" role="alert" style="max-width: 1024px; margin-top:100px;">
+        We have sent you a verification link to your email address [{{ request.GET.email }}].
+        <br><br>
+        Already verified? <a href="{% url 'login' %}">Login</a>
     </div>
-    {% endif %}
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
-</form>
 
-<div class="d-flex flex-column">
-    <a class="m-auto" href="{% url 'password_reset' %}">Forgot your password?</a>
-</div>
+    {% else %}
+	<div class="card mx-auto" style="max-width: 380px; margin-top:100px;">
+      <div class="card-body">
+      <h4 class="card-title mb-4">Sign in</h4>
+          {% include 'includes/alerts.html' %}
+      <form action="{% url 'login' %}" method="POST">
+          {% csrf_token %}
+          <div class="form-group">
+			 <input type="email" class="form-control" placeholder="Email Address" name="email">
+          </div> <!-- form-group// -->
+          <div class="form-group">
+			<input type="password" class="form-control" placeholder="Password" name="password">
+          </div> <!-- form-group// -->
 
+          <div class="form-group">
+          	<a href="#" class="float-right">Forgot password?</a>
+
+          </div> <!-- form-group form-check .// -->
+          <div class="form-group">
+              <button type="submit" class="btn btn-primary btn-block"> Login  </button>
+          </div> <!-- form-group// -->
+      </form>
+      </div> <!-- card-body.// -->
+    </div> <!-- card .// -->
+
+     <p class="text-center mt-4">Don't have account? <a href="{% url 'register' %}">Sign up</a></p>
+     <br><br>
+<!-- ============================ COMPONENT LOGIN  END.// ================================= -->
+{% endif %}
+
+</section>
 {% endblock content %}
