@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate
-from .models import Subscriber, ReviewRating
+from .models import Subscriber, ReviewRating, SubscriberProfile
 
 
 class RegistrationForm(forms.ModelForm):
@@ -77,3 +77,26 @@ class ReviewForm(forms.ModelForm):
     class Meta:
         model = ReviewRating
         fields = ['subject', 'review', 'rating']
+
+
+class UserForm(forms. ModelForm):
+    class Meta:
+        model = Subscriber
+        fields = ['username']
+
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = 'form-control'
+
+
+class UserProfileForm(forms.ModelForm):
+    profile_picture = forms.ImageField(required=False, error_messages = {'invalid':("Image files only")}, widget=forms.FileInput)
+    class Meta:
+        model = SubscriberProfile
+        fields = ['profile_picture']
+
+    def __init__(self, *args, **kwargs):
+        super(UserProfileForm, self).__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = 'form-control'

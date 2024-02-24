@@ -1,73 +1,51 @@
-{% extends './base.html' %}
+{% extends 'base.html' %}
 
-{% block content%}
-<style type="text/css">
-    .form-signin {
-  width: 100%;
-  max-width: 330px;
-  padding: 15px;
-  margin: auto;
-}
-.form-signin .form-control {
-  position: relative;
-  box-sizing: border-box;
-  height: auto;
-  padding: 10px;
-  font-size: 16px;
-}
-.form-signin .form-control:focus {
-  z-index: 2;
-}
-.form-signin input[type="email"] {
-  margin-bottom: 10px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-}
-.form-signin input[type="username"] {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-.form-signin input[type="date"] {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-.h3{
-  text-align: center;
-}
-</style>
 
-<form class="form-signin" method="post">
-    {% csrf_token %}
-    <h1 class="h3 mb-3 font-weight-normal">Account</h1>
-    <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email address" required
-           autofocus value="{{account_form.initial.email}}">
-    <input type="text" name="username" id="inputUsername" class="form-control" placeholder="Username" required
-           value="{{account_form.initial.username}}">
-    <input type="date" name="date_of_birth" id="inputDate" class="form-control" placeholder="Date" required
-           value="{{account_form.initial.date_of_birth}}">
-    {% for field in login_form %}
-    <p>
-        {% for error in field.errors %}
-    <p style="color: red">{{error}}</p>
-    {% endfor %}
-    </p>
-    {% endfor %}
-    {% if account_form.non_field_errors %}
-    <div style="color:red">
-        <p>{{ login_form.non_field_errors }}</p>
-    </div>
-    {% endif %}
-    {% if success_message %}
-    <p style="color: mediumseagreen; text-align: center;">{{success_message}}</p>
-    {% endif %}
-    <button class="btn btn-lg btn-primary btn-block" type="submit" style="background: seagreen; border: seagreen">Save
-        changes
-    </button>
-</form>
+{% block content %}
 
-<div class="d-flex flex-column">
-    <a class="m-auto" href="{% url 'password_change' %}">Change password</a>
+<section class="section-conten padding-y bg">
+
+{% include 'includes/alerts.html' %}
+<div class="container">
+	<div class="row">
+	{% include 'includes/account_sidebar.html' %}
+	<main class="col-md-9">
+		<article class="card">
+		<header class="card-header">
+			<strong class="d-inline-block mr-3">Logged in as:</strong>
+			<span>{{user.username}}</span>
+		</header>
+		<div class="card-body">
+			<div class="row">
+
+			<div class="col-md-6">
+				<div class="card" style="text-align:center;">
+					<div class="card-body">
+						<h5 class="card-title">Total Orders</h5>
+						<h4>{{orders_count}}</h4>
+						<a href="#">View Orders</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="card" style="text-align:center;">
+					<div class="card-body">
+						<img src="{{userprofile.profile_picture.url}}" alt="User Profile Picture" width="50" height="50" style="border-radius:50%;">
+						<p class="mb-0">{{user.email}}</p>
+<!--						<p>{{user.phone_number}}</p>-->
+					</div>
+				</div>
+			</div>
+
+			</div> <!-- row.// -->
+		</div> <!-- card-body .// -->
+
+		</article> <!-- order-group.// -->
+	</main>
+</div> <!-- row.// -->
 </div>
-{% endblock content %}
+
+
+</section>
+
+{% endblock %}

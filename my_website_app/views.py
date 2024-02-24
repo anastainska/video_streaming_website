@@ -8,6 +8,7 @@ from .models import Show, Folder
 from .forms import *
 from django.contrib import messages, auth
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 
 # Verification email
 from django.contrib.sites.shortcuts import get_current_site
@@ -35,6 +36,12 @@ def registration_view(request):
 
             user = Subscriber.objects.create_user(username=username, email=email, password=password)
             user.save()
+
+            # Create user profile
+            profile = SubscriberProfile()
+            profile.user_id = user.id
+            profile.profile_picture = 'default/default-user.png'
+            profile.save()
 
             # USER ACTIVATION
             current_site = get_current_site(request)
@@ -206,6 +213,32 @@ def reset_password(request):
     return render(request, 'reset_password.html')
 
 
+@login_required(login_url='/login/')
+def change_password(request):
+    if request.method == 'POST':
+        current_password = request.POST['current_password']
+        new_password = request.POST['new_password']
+        confirm_password = request.POST['confirm_password']
+
+        user = Subscriber.objects.get(username__exact=request.user.username)
+
+        if new_password == confirm_password:
+            success = user.check_password(current_password)
+            if success:
+                user.set_password(new_password)
+                user.save()
+                # auth.logout(request)
+                messages.success(request, 'Password updated successfully.')
+                return redirect('change_password')
+            else:
+                messages.error(request, 'Please enter valid current password.')
+                return redirect('change_password')
+        else:
+            messages.error(request, 'Password does not match.')
+            return redirect('change_password')
+    return render(request, 'change_password.html')
+
+
 def submit_review(request, show_id):
     url = request.META.get('HTTP_REFERER')
     if request.method =='POST':
@@ -228,6 +261,28 @@ def submit_review(request, show_id):
                 data.save()
                 messages.success(request, 'Thank you! Your review has been submitted.')
                 return redirect(url)
+
+
+@login_required(login_url='/login/')
+def edit_profile(request):
+    user_profile = get_object_or_404(SubscriberProfile, user=request.user)
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, instance=request.user)
+        profile_form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, 'Your profile has been updated.')
+            return redirect('edit_profile')
+    else:
+        user_form = UserForm(instance=request.user)
+        profile_form = UserProfileForm(instance=user_profile)
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'user_profile': user_profile,
+    }
+    return render(request, 'edit_profile.html', context)
 
 
 class ShowListView(ListView):

@@ -105,6 +105,14 @@ class Subscriber(User, AbstractBaseUser):
         return True
 
 
+class SubscriberProfile(models.Model):
+    user = models.OneToOneField(Subscriber, on_delete=models.CASCADE)
+    profile_picture = models.ImageField(blank=True, upload_to='userprofile')
+
+    def __str__(self):
+        return self.user.username
+
+
 class Category(models.Model):
     category_name = models.CharField(max_length=50, unique=True)
     slug = models.SlugField(max_length=100, unique=True)
