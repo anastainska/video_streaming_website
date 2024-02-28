@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 from my_website_app.views import *
 
 urlpatterns = [
@@ -24,6 +26,7 @@ urlpatterns = [
     path('', ShowListView.as_view(), name='shows'),
     path('home/', home_screen_view, name='home_screen'),
     path('show/<int:pk>/', ShowDetail.as_view(), name='show'),
+    # path('show/<slug:show_slug>/', ShowDetail.as_view(), name='show'),
     path('create-show/', ShowCreate.as_view(), name='show-create'),
     path('show-update/<int:pk>/', ShowUpdate.as_view(), name='show-update'),
     path('show-delete/<int:pk>/', ShowDelete.as_view(), name='show-delete'),

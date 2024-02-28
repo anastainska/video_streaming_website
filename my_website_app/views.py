@@ -1,10 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth import login, logout, authenticate
-from .models import Show, Folder
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from .models import Show, Folder, Category
 from .forms import *
 from django.contrib import messages, auth
 from django.http import HttpResponse
@@ -24,6 +26,43 @@ from django.core.mail import EmailMessage
 def home_screen_view(request):
     print(request.headers)
     return render(request, 'base.html', {})
+
+
+def movies(request, category_slug=None):
+    categories = None
+    shows = None
+
+    if category_slug is not None:
+        categories = get_object_or_404(Category, slug=category_slug)
+        shows = Show.objects.filter(category=categories)
+        paginator = Paginator(shows, 6)
+        page = request.GET.get('page')
+        paged_shows = paginator.get_page(page)
+        show_count = shows.count
+    else:
+        shows = Show.objects.all()
+        paginator = Paginator(shows, 2)
+        page = request.GET.get('page')
+        paged_shows = paginator.get_page(page)
+        show_count = shows.count()
+    context = {
+        'shows': paged_shows,
+        'show_count': show_count,
+    }
+    return render(request, 'movies.html', context)
+
+
+def search(request):
+    if 'keyword' in request.GET:
+        keyword = request.GET['keyword']
+        if keyword:
+            shows = Show.objects.filter(title__icontains=keyword)
+            show_count = shows.count()
+    context = {
+        'shows': shows,
+        'show_count': show_count,
+    }
+    return render(request, 'movies.html', context)
 
 
 def registration_view(request):
@@ -119,6 +158,8 @@ def favourite_add(request, show_id):
     show = Show.objects.get(id=show_id)
     folder, created = Folder.objects.get_or_create(id_subscriber=request.user.subscriber, name='Favourites')
     folder.favourites.add(show)
+    print('meow')
+    request.user.subscriber.save()
     return redirect('show', pk=show_id)
 
 
@@ -126,6 +167,8 @@ def remove_from_favorites(request, show_id):
     show = Show.objects.get(id=show_id)
     folder = Folder.objects.get(name='Favourites', id_subscriber=request.user.subscriber)
     folder.favourites.remove(show)
+    print('bark')
+    request.user.subscriber.save()
     return redirect('favourites')
 
 
