@@ -6,6 +6,9 @@ __pycache__
 db.sqlite3
 media
 manage.py
+my_website_app/migrations
+my_website_app/static/images
+media
 
 # Backup files #
 *.bak
