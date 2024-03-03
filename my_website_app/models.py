@@ -183,6 +183,11 @@ class Folder(models.Model):
         return self.name
 
 
+class FolderShow(models.Model):
+    folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
+    show = models.ForeignKey(Show, on_delete=models.CASCADE)
+
+
 class ReviewRating(models.Model):
     show = models.ForeignKey(Show, on_delete=models.CASCADE)
     user = models.ForeignKey(Subscriber, on_delete=models.CASCADE)

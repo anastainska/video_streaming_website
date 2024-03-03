@@ -6,10 +6,10 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth import login, logout, authenticate
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from .models import Show, Folder, Category
+from .models import Show, Folder, Category, FolderShow
 from .forms import *
 from django.contrib import messages, auth
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 
 # Verification email
@@ -158,7 +158,6 @@ def favourite_add(request, show_id):
     show = Show.objects.get(id=show_id)
     folder, created = Folder.objects.get_or_create(id_subscriber=request.user.subscriber, name='Favourites')
     folder.favourites.add(show)
-    print('meow')
     request.user.subscriber.save()
     return redirect('show', pk=show_id)
 
@@ -167,9 +166,8 @@ def remove_from_favorites(request, show_id):
     show = Show.objects.get(id=show_id)
     folder = Folder.objects.get(name='Favourites', id_subscriber=request.user.subscriber)
     folder.favourites.remove(show)
-    print('bark')
     request.user.subscriber.save()
-    return redirect('favourites')
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 
 def favourite_list(request):
@@ -346,7 +344,15 @@ class ShowDetail(DetailView):
         reviews = ReviewRating.objects.filter(show=show).order_by('-updated_at')
 
         context['reviews'] = reviews
+
+        # Check if 'Favourites' folder exists for the current user
+        favourites_folder = get_object_or_404(Folder, name='Favourites', id_subscriber=self.request.user.subscriber)
+
+        # Pass the 'Favourites' folder to the template
+        context['favourites_folder'] = favourites_folder
+
         return context
+
 
 
 class ShowCreate(CreateView):
