@@ -134,6 +134,7 @@ class Show(models.Model):
     description = models.CharField(max_length=500, null=True, blank=True)
     poster = models.ImageField(upload_to='images/shows', blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    video = models.FileField(upload_to='videos', null=True)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -181,11 +182,6 @@ class Folder(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class FolderShow(models.Model):
-    folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
-    show = models.ForeignKey(Show, on_delete=models.CASCADE)
 
 
 class ReviewRating(models.Model):

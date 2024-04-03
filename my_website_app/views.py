@@ -6,7 +6,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth import login, logout, authenticate
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from .models import Show, Folder, Category, FolderShow
+from .models import Show, Folder, Category
 from .forms import *
 from django.contrib import messages, auth
 from django.http import HttpResponse, HttpResponseRedirect
@@ -346,13 +346,15 @@ class ShowDetail(DetailView):
         context['reviews'] = reviews
 
         # Check if 'Favourites' folder exists for the current user
-        favourites_folder = get_object_or_404(Folder, name='Favourites', id_subscriber=self.request.user.subscriber)
+        if self.request.user.is_authenticated:
+            d = get_object_or_404(Folder, name='Favourites', id_subscriber=self.request.user.subscriber)
+        else:
+            favourites_folder = None
 
         # Pass the 'Favourites' folder to the template
         context['favourites_folder'] = favourites_folder
 
         return context
-
 
 
 class ShowCreate(CreateView):

@@ -42,7 +42,7 @@
                         </div>
 
                         <p>{{ show.description }}</p>
-
+                        {% if request.user.is_authenticated %}
                         {% if show in favourites_folder.favourites.all %}
                             <form action="{% url 'remove_from_favorites' show.id %}" method="post">
                                 {% csrf_token %}
@@ -54,6 +54,7 @@
                                 <button type="submit" class="btn btn-outline-primary">Add to Favourites</button>
                             </form>
                         {% endif %}
+                        {% endif %}
                         <hr>
                     </article> <!-- product-info-aside .// -->
                 </main> <!-- col.// -->
@@ -62,7 +63,10 @@
         <!-- ============================ COMPONENT 1 END .// ================================= -->
 
         <br>
-
+        <video width='1280' height= '720' controls>
+            <source src="{{ show.video.url }}" type='video/mp4'>
+            Your browser does not support the video tag.
+        </video>
         <div class="row">
             <div class="col-md-9">
 
