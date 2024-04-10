@@ -76,6 +76,8 @@ def registration_view(request):
             user = Subscriber.objects.create_user(username=username, email=email, password=password)
             user.save()
 
+            favourites_folder = Folder.objects.create(name='Favourites', id_subscriber=user.subscriber)
+
             # Create user profile
             profile = SubscriberProfile()
             profile.user_id = user.id
