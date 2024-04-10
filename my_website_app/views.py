@@ -347,7 +347,7 @@ class ShowDetail(DetailView):
 
         # Check if 'Favourites' folder exists for the current user
         if self.request.user.is_authenticated:
-            d = get_object_or_404(Folder, name='Favourites', id_subscriber=self.request.user.subscriber)
+            favourites_folder = get_object_or_404(Folder, name='Favourites', id_subscriber=self.request.user.subscriber)
         else:
             favourites_folder = None
 

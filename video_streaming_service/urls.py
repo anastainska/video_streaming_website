@@ -46,4 +46,8 @@ urlpatterns = [
     path('reset_password/', reset_password, name='reset_password'),
     path('submit_review/<int:show_id>/', submit_review, name='submit_review'),
     path('account/change_password', change_password, name='change_password'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_URL)
