@@ -106,7 +106,6 @@ def registration_view(request):
     return render(request, 'register.html', context)
 
 
-
 def logout_view(request):
     logout(request)
     return redirect('shows')
