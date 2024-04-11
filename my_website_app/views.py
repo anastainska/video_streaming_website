@@ -78,11 +78,9 @@ def registration_view(request):
 
             favourites_folder = Folder.objects.create(name='Favourites', id_subscriber=user.subscriber)
 
-            profile = SubscriberProfile.objects.create(user=user)
-
             # Create user profile
             profile = SubscriberProfile()
-            profile.user_id = user.id
+            profile.user = user
             profile.profile_picture = 'default/default-user.png'
             profile.save()
 
@@ -106,6 +104,7 @@ def registration_view(request):
         'form': form,
     }
     return render(request, 'register.html', context)
+
 
 
 def logout_view(request):
