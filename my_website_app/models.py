@@ -199,5 +199,5 @@ class ReviewRating(models.Model):
         return self.subject
 
 
-# def upload_location(instance, filename):
-#     file_path =
+class Logo(models.Model):
+    image = models.ImageField(upload_to='logo_images/')

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
-from .models import User, Admin, Subscriber, Show, Folder, Category, ReviewRating, SubscriberProfile
+from .models import *
 
 
 class SubscriberAdmin(UserAdmin):
@@ -40,3 +40,4 @@ admin.site.register(Folder)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(ReviewRating)
 admin.site.register(SubscriberProfile, SubscriberProfileAdmin)
+admin.site.register(Logo)
