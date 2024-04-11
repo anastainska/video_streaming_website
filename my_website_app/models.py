@@ -201,8 +201,3 @@ class ReviewRating(models.Model):
 
 class Logo(models.Model):
     image = models.ImageField(upload_to='logo_images/')
-
-    def save(self, *args, **kwargs):
-        if self.__class__.objects.count():
-            self.pk = self.__class__.objects.first().pk
-        super().save(*args, **kwargs)
