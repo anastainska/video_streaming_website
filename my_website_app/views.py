@@ -315,10 +315,17 @@ def edit_profile(request):
         user_form = UserForm(request.POST, instance=request.user)
         profile_form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
         if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
-            profile_form.save()
-            messages.success(request, 'Your profile has been updated.')
-            return redirect('edit_profile')
+            # Save user form without committing to update user's username
+            user = user_form.save(commit=False)
+            new_username = user_form.cleaned_data['username']
+            if Subscriber.objects.exclude(pk=request.user.pk).filter(username=new_username).exists():
+                messages.error(request, 'This username is already taken. Please choose a different one.')
+            else:
+                # Save user form with new username
+                user.save()
+                profile_form.save()
+                messages.success(request, 'Your profile has been updated.')
+                return redirect('edit_profile')
     else:
         user_form = UserForm(instance=request.user)
         profile_form = UserProfileForm(instance=user_profile)
