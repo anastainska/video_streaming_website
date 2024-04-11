@@ -6,7 +6,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth import login, logout, authenticate
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from .models import Show, Folder, Category
+from .models import Show, Folder, Category, Logo
 from .forms import *
 from django.contrib import messages, auth
 from django.http import HttpResponse, HttpResponseRedirect
@@ -24,8 +24,10 @@ from django.core.mail import EmailMessage
 # Create your views here.
 
 def home_screen_view(request):
-    print(request.headers)
-    return render(request, 'base.html', {})
+    logo_object = Logo.objects.first()  # Assuming you have only one logo
+    context = {'logo_object': logo_object}
+    return render(request, 'base.html', context)
+
 
 
 def movies(request, category_slug=None):
