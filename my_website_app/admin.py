@@ -22,7 +22,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class ShowAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
-    list_display = ('title', 'year', 'popularity', 'category')
+    list_display = ('title', 'year', 'category')
 
 
 class SubscriberProfileAdmin(admin.ModelAdmin):
@@ -40,4 +40,3 @@ admin.site.register(Folder)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(ReviewRating)
 admin.site.register(SubscriberProfile, SubscriberProfileAdmin)
-admin.site.register(Logo)

@@ -4,31 +4,12 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db.models import Max, Avg, Count
 from django.urls import reverse
-from django.db.models.signals import pre_save, post_delete
-from django.utils.text import slugify
-from django.conf import settings
-from django.dispatch import receiver
 
 
 class Role(Enum):
     U = "USER"
     A = "ADMIN"
     V = "VISITOR"
-
-
-class Colour(Enum):
-    YEL = "YELLOW"
-    BL = "BLUE"
-    GR = "GREEN"
-
-
-class Genre(Enum):
-    ROM = "ROMANCE"
-    HOR = "HORROR"
-    HIST = "HISTORICAL"
-    BAT = "BATTLE"
-    COM = "COMEDY"
-    DRA = "DRAMA"
 
 
 class MyUserManager(BaseUserManager):
@@ -128,9 +109,6 @@ class Category(models.Model):
 class Show(models.Model):
     title = models.CharField(max_length=500, null=True, blank=True)
     year = models.IntegerField(null=False, blank=False)
-    genre = models.CharField(max_length=10, choices=[(choice.value, choice.name) for choice in Genre])
-    popularity = models.FloatField(validators=[MinValueValidator(0.00), MaxValueValidator(9.99)], null=True, blank=True)
-    seasons = models.IntegerField(null=False, blank=False)
     description = models.CharField(max_length=500, null=True, blank=True)
     poster = models.ImageField(upload_to='images/shows', blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -143,9 +121,6 @@ class Show(models.Model):
             self.id = max_id + 1
 
         super().save(*args, **kwargs)
-
-    class Meta:
-        ordering = ['popularity']
 
     def __str__(self):
         return self.title
@@ -167,7 +142,6 @@ class Show(models.Model):
 
 class Folder(models.Model):
     name = models.CharField(max_length=30, null=False, blank=False)
-    colour = models.CharField(max_length=10, choices=[(choice.value, choice.name) for choice in Colour])
     id_show = models.ManyToManyField(Show)
     id_subscriber = models.ForeignKey(Subscriber, on_delete=models.CASCADE)
     favourites = models.ManyToManyField(Show, related_name='favorited_by')
@@ -197,7 +171,3 @@ class ReviewRating(models.Model):
 
     def __str__(self):
         return self.subject
-
-
-class Logo(models.Model):
-    image = models.ImageField(upload_to='logo_images/')

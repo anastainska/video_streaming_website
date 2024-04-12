@@ -1,15 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views import View
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.contrib.auth import login, logout, authenticate
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from .models import Show, Folder, Category, Logo
+from django.contrib.auth import logout
+from django.core.paginator import Paginator
+from .models import Show, Folder, Category
 from .forms import *
 from django.contrib import messages, auth
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 
 # Verification email
