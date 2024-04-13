@@ -28,8 +28,13 @@
 										<div class="form-group col-md-6">
 											<label>Profile Picture</label>
 											<div class="text-left">
-												<img src="{{user_profile.profile_picture.url}}" alt="Profile Picture"
-													width="100" style="border-radius:50px;">
+												{% if user_profile.profile_picture %}
+												<img src="{{ user_profile.profile_picture.url|default_if_none:'#' }}"
+													alt="Profile Picture" width="100" style="border-radius: 50px;">
+												{% else %}
+												<p>No profile picture available</p>
+												{% endif %}
+
 											</div>
 											{{profile_form.profile_picture}}
 										</div>

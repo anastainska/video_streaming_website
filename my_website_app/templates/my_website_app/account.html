@@ -37,11 +37,15 @@
 					</header>
 					<div class="card-body">
 						<div class="row">
-							<div class="col-md-6 mx-auto"> <!-- Centering the content -->
+							<div class="col-md-6 mx-auto">
 								<div class="card" style="text-align:center;">
 									<div class="card-body">
-										<img src="{{user_profile.profile_picture.url}}" alt="Profile Picture"
-											width="100" style="border-radius:50px;">
+										{% if user_profile.profile_picture %}
+										<img src="{{ user_profile.profile_picture.url|default_if_none:'#' }}"
+											alt="Profile Picture" width="100" style="border-radius: 50px;">
+										{% else %}
+										<p>No profile picture available</p>
+										{% endif %}
 										<br><br>
 										<p class="mb-0"
 											style="font-family: 'Times New Roman', serif; text-shadow: 2px 2px 4px #333;">
