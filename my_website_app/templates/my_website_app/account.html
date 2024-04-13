@@ -1,51 +1,59 @@
 {% extends 'base.html' %}
 
-
 {% block content %}
 
-<section class="section-conten padding-y bg">
+<style>
+	html,
+	body {
+		height: 100%;
+		margin: 0;
+		padding: 0;
+	}
 
-{% include 'includes/alerts.html' %}
+	body {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.container {
+		flex: 1;
+	}
+
+	.footer-container {
+		margin-top: auto;
+	}
+</style>
+
 <div class="container">
-	<div class="row">
-	{% include 'includes/account_sidebar.html' %}
-	<main class="col-md-9">
-		<article class="card">
-		<header class="card-header">
-			<strong class="d-inline-block mr-3">Logged in as:</strong>
-			<span>{{user.username}}</span>
-		</header>
-		<div class="card-body">
-			<div class="row">
-
-			<div class="col-md-6">
-				<div class="card" style="text-align:center;">
+	<section class="section-conten padding-y bg">
+		{% include 'includes/alerts.html' %}
+		<div class="row">
+			{% include 'includes/account_sidebar.html' %}
+			<main class="col-md-9">
+				<article class="card">
+					<header class="card-header">
+						<strong class="d-inline-block mr-3">Logged in as:</strong>
+						<span>{{user.username}}</span>
+					</header>
 					<div class="card-body">
-						<h5 class="card-title">Total Orders</h5>
-						<h4>{{orders_count}}</h4>
-						<a href="#">View Orders</a>
+						<div class="row">
+							<div class="col-md-6 mx-auto"> <!-- Centering the content -->
+								<div class="card" style="text-align:center;">
+									<div class="card-body">
+										<img src="{{user_profile.profile_picture.url}}" alt="Profile Picture"
+											width="100" style="border-radius:50px;">
+										<br><br>
+										<p class="mb-0"
+											style="font-family: 'Times New Roman', serif; text-shadow: 2px 2px 4px #333;">
+											{{ user.email }}</p>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
-				</div>
-			</div>
-			<div class="col-md-6">
-				<div class="card" style="text-align:center;">
-					<div class="card-body">
-						<img src="{{userprofile.profile_picture.url}}" alt="User Profile Picture" width="50" height="50" style="border-radius:50%;">
-						<p class="mb-0">{{user.email}}</p>
-<!--						<p>{{user.phone_number}}</p>-->
-					</div>
-				</div>
-			</div>
-
-			</div> <!-- row.// -->
-		</div> <!-- card-body .// -->
-
-		</article> <!-- order-group.// -->
-	</main>
-</div> <!-- row.// -->
+				</article>
+			</main>
+		</div>
+	</section>
 </div>
-
-
-</section>
-
 {% endblock %}

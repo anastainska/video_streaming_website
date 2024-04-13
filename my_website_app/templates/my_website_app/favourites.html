@@ -1,5 +1,28 @@
 {% extends './base.html' %}
+
 {% block content %}
+
+<style>
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .container {
+        flex: 1;
+    }
+
+    .footer-container {
+        margin-top: auto;
+    }
+</style>
 
 <div class="container">
     <section class="jumbotron text-center bg-white">
@@ -17,7 +40,9 @@
                 <a class="text-dark" href="{{show.get_absolute_url}}">
                     <div class="card mb-4 box-shadow">
                         <div class="card-body">
-                            <a href="{% url 'show' show.id %}"><h3 style="color: black">{{show.title}}</h3></a>
+                            <a href="{% url 'show' show.id %}">
+                                <h3 style="color: black">{{show.title}}</h3>
+                            </a>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div id="favourite-section">
                                     <a href="{% url 'remove_from_favorites' show.id %}">Remove from favorites</a>
@@ -28,11 +53,10 @@
                 </a>
             </div>
             {% empty %}
-            <li>You have no favorites yet.</li>
+            <p class="lead">Seems, that you have no favorites yet. Start exploring <a href="{% url 'shows' %}">here</a>!</p>
             {% endfor %}
         </div>
     </div>
-</div>
 </div>
 
 {% endblock content %}

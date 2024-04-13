@@ -1,195 +1,162 @@
 {% extends 'base.html' %}
+
 {% load static %}
 
 {% block content %}
 
-<!-- ========================= SECTION PAGETOP ========================= -->
+<style>
+	.transition-arrow {
+		transition: transform 0.3s ease-in-out;
+		/* Adjust the duration and timing function as needed */
+	}
+
+	.rotate-arrow {
+		transform: rotate(90deg);
+		/* Adjust the rotation angle as needed */
+	}
+
+	.custom-row {
+		margin-left: -15px;
+		margin-right: -15px;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: start;
+		/* display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); */
+		/* Adjust width as needed */
+		gap: 15px;
+		/* Adjust spacing between cards */
+	}
+
+	.custom-card {
+		width: 14rem;
+		height: 100%;
+	}
+
+	.custom-card img {
+		height: 100%;
+		object-fit: cover;
+	}
+
+
+	.row-col {
+		float: left;
+	}
+</style>
+
 <section class="section-pagetop bg">
-<div class="container">
-	{% if 'search' in request.path %}
-	<h2 class="title-page">Search result</h2>
-	{% else %}
-	<h2 class="title-page">All shows</h2>
-	{% endif %}
+	<div class="container">
+		{% if 'search' in request.path %}
+		<h2 class="title-page">Search result</h2>
+		{% else %}
+		<h2 class="title-page">All shows</h2>
+		{% endif %}
 
-</div> <!-- container //  -->
-</section>
-<!-- ========================= SECTION INTRO END// ========================= -->
-
-<!-- ========================= SECTION CONTENT ========================= -->
-<section class="section-content padding-y">
-<div class="container">
-
-<div class="row">
-	<aside class="col-md-3">
-
-<div class="card">
-	<article class="filter-group">
-		<header class="card-header">
-			<a href="#" data-toggle="collapse" data-target="#collapse_1" aria-expanded="true" class="">
-				<i class="icon-control fa fa-chevron-down"></i>
-				<h6 class="title">Categories</h6>
-			</a>
-		</header>
-		<div class="filter-content collapse show" id="collapse_1" style="">
-			<div class="card-body">
-
-				<ul class="list-menu">
-					<li><a href="{% url 'movies' %}">All shows</a></li>
-					{% for category in links %}
-						<li><a href="{{category.get_url}}">{{ category.category_name }}</a></li>
-					{% endfor %}
-				</ul>
-
-			</div> <!-- card-body.// -->
-		</div>
-	</article> <!-- filter-group  .// -->
-<!--	<article class="filter-group">-->
-<!--		<header class="card-header">-->
-<!--			<a href="#" data-toggle="collapse" data-target="#collapse_4" aria-expanded="true" class="">-->
-<!--				<i class="icon-control fa fa-chevron-down"></i>-->
-<!--				<h6 class="title">Sizes </h6>-->
-<!--			</a>-->
-<!--		</header>-->
-<!--		<div class="filter-content collapse show" id="collapse_4" style="">-->
-<!--			<div class="card-body">-->
-<!--			  <label class="checkbox-btn">-->
-<!--			    <input type="checkbox">-->
-<!--			    <span class="btn btn-light"> XS </span>-->
-<!--			  </label>-->
-
-<!--			  <label class="checkbox-btn">-->
-<!--			    <input type="checkbox">-->
-<!--			    <span class="btn btn-light"> SM </span>-->
-<!--			  </label>-->
-
-<!--			  <label class="checkbox-btn">-->
-<!--			    <input type="checkbox">-->
-<!--			    <span class="btn btn-light"> LG </span>-->
-<!--			  </label>-->
-
-<!--			  <label class="checkbox-btn">-->
-<!--			    <input type="checkbox">-->
-<!--			    <span class="btn btn-light"> XXL </span>-->
-<!--			  </label>-->
-<!--		</div>&lt;!&ndash; card-body.// &ndash;&gt;-->
-<!--		</div>-->
-<!--	</article> &lt;!&ndash; filter-group .// &ndash;&gt;-->
-
-<!--	<article class="filter-group">-->
-<!--		<header class="card-header">-->
-<!--			<a href="#" data-toggle="collapse" data-target="#collapse_3" aria-expanded="true" class="">-->
-<!--				<i class="icon-control fa fa-chevron-down"></i>-->
-<!--				<h6 class="title">Price range </h6>-->
-<!--			</a>-->
-<!--		</header>-->
-<!--		<div class="filter-content collapse show" id="collapse_3" style="">-->
-<!--			<div class="card-body">-->
-
-<!--				<div class="form-row">-->
-<!--				<div class="form-group col-md-6">-->
-<!--				  <label>Min</label>-->
-<!--				  &lt;!&ndash; <input class="form-control" placeholder="$0" type="number"> &ndash;&gt;-->
-<!--				  	<select class="mr-2 form-control">-->
-<!--						<option value="0">$0</option>-->
-<!--						<option value="50">$50</option>-->
-<!--						<option value="100">$100</option>-->
-<!--						<option value="150">$150</option>-->
-<!--						<option value="200">$200</option>-->
-<!--						<option value="500">$500</option>-->
-<!--						<option value="1000">$1000</option>-->
-<!--					</select>-->
-<!--				</div>-->
-<!--				<div class="form-group text-right col-md-6">-->
-<!--				  <label>Max</label>-->
-<!--				  	<select class="mr-2 form-control">-->
-<!--						<option value="50">$50</option>-->
-<!--						<option value="100">$100</option>-->
-<!--						<option value="150">$150</option>-->
-<!--						<option value="200">$200</option>-->
-<!--						<option value="500">$500</option>-->
-<!--						<option value="1000">$1000</option>-->
-<!--						<option value="2000">$2000+</option>-->
-<!--					</select>-->
-<!--				</div>-->
-<!--				</div> &lt;!&ndash; form-row.// &ndash;&gt;-->
-<!--				<button class="btn btn-block btn-primary">Apply</button>-->
-<!--			</div>&lt;!&ndash; card-body.// &ndash;&gt;-->
-<!--		</div>-->
-<!--	</article> &lt;!&ndash; filter-group .// &ndash;&gt;-->
-
-</div> <!-- card.// -->
-
-	</aside> <!-- col.// -->
-	<main class="col-md-9">
-
-<header class="border-bottom mb-4 pb-3">
-		<div class="form-inline">
-			<span class="mr-md-auto"><b>{{ show_count }}</b> shows found</span>
-
-		</div>
-</header><!-- sect-heading -->
-
-<div class="row">
-	{% if shows %}
-		{% for show in shows %}
-		<div class="col-md-4">
-			<figure class="card card-product-grid">
-				<div class="img-wrap">
-
-					<img src="{{ show.poster.url }}">
-
-				</div> <!-- img-wrap.// -->
-				<figcaption class="info-wrap">
-					<div class="fix-height">
-						<a href="{% url 'show' show.id %}" class="title">{{ show.title}}</a>
-						<div class="price-wrap mt-2">
-							<span class="price">{{ show.year }}</span>
-						</div> <!-- price-wrap.// -->
-					</div>
-	<!--				<a href="#" class="btn btn-block btn-success">Watch</a>-->
-				</figcaption>
-			</figure>
-		</div> <!-- col.// -->
-		{% endfor %}
-	{% else %}
-	<div>
-		<h2>No result found. No movies for you >:)</h2>
 	</div>
-	{% endif %}
-</div> <!-- row end.// -->
-
-
-<nav class="mt-4" aria-label="Page navigation sample">
-	{% if shows.has_other_pages %}
-  <ul class="pagination">
-	  {% if shows.has_previous %}
-    <li class="page-item"><a class="page-link" href="?page={{shows.previous_page_number}}">Previous</a></li>
-	  {% else %}
-	  <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-	  {% endif %}
-	  {% for i in shows.paginator.page_range %}
-	  {% if shows.number == i %}
-    	<li class="page-item active"><a class="page-link" href="#">{{i}}</a></li>
-	  {% else %}
-	  	<li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
-	  {% endif %}
-	  {% endfor %}
-	  {% if shows.has_next %}
-    <li class="page-item"><a class="page-link" href="?page={{shows.next_page_number}}">Next</a></li>
-	  {% else %}
-	  <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
-	  {% endif %}
-  </ul>
-	{% endif %}
-</nav>
-
-	</main> <!-- col.// -->
-
-</div>
-
-</div> <!-- container .//  -->
 </section>
-<!-- ========================= SECTION CONTENT END// ========================= -->
+
+<section class="section-content padding-y">
+	<div class="container">
+		<div class="row">
+			<aside class="col-md-3">
+				<div class="card">
+					<article class="filter-group">
+						<header class="card-header">
+							<a href="#" data-toggle="collapse" data-target="#collapse_1" aria-expanded="true"
+								class="collapsed" id="collapse-header">
+								<i class="icon-control fa fa-chevron-down transition-arrow"></i>
+								<h6 class="title">Categories</h6>
+							</a>
+						</header>
+
+						<div class="filter-content collapse show" id="collapse_1">
+							<div class="card-body">
+								<ul class="list-menu">
+									<li><a href="{% url 'movies' %}">All shows</a></li>
+									{% for category in links %}
+									<li><a href="{{category.get_url}}">{{ category.category_name }}</a></li>
+									{% endfor %}
+								</ul>
+							</div>
+						</div>
+					</article>
+				</div>
+
+
+			</aside>
+			<main class="col-md-9">
+
+				<header class="border-bottom mb-4 pb-3">
+					<div class="form-inline">
+						<span class="mr-md-auto"><b>{{ show_count }}</b> shows found</span>
+					</div>
+				</header>
+				<div class="container">
+					<div class="row custom-row row-cols-1 row-cols-md-3 g-4">
+						{% if shows %}
+						{% for show in shows %}
+						<div class="mb-4">
+							<div class="card custom-card">
+								<img class="card-img-top" src="{{ show.poster.url }}" alt="{{ show.title }} Poster">
+								<div class="card-body">
+									<h5 class="card-title"><a href="{% url 'show' show.id %}">{{ show.title }}</a></h5>
+									<p class="card-text">{{ show.description }}</p>
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+						{% else %}
+						<div>
+							<h2>No result found. No movies for you >:)</h2>
+						</div>
+						{% endif %}
+					</div>
+				</div>
+
+				<nav class="mt-4" aria-label="Page navigation sample">
+					{% if shows.has_other_pages %}
+					<ul class="pagination">
+						{% if shows.has_previous %}
+						<li class="page-item"><a class="page-link"
+								href="?page={{shows.previous_page_number}}">Previous</a></li>
+						{% else %}
+						<li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+						{% endif %}
+						{% for i in shows.paginator.page_range %}
+						{% if shows.number == i %}
+						<li class="page-item active"><a class="page-link" href="#">{{i}}</a></li>
+						{% else %}
+						<li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+						{% endif %}
+						{% endfor %}
+						{% if shows.has_next %}
+						<li class="page-item"><a class="page-link" href="?page={{shows.next_page_number}}">Next</a>
+						</li>
+						{% else %}
+						<li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+						{% endif %}
+					</ul>
+					{% endif %}
+				</nav>
+
+			</main>
+
+		</div>
+
+	</div>
+</section>
+
+<script>
+	$(document).ready(function () {
+		$('#collapse_1').on('hide.bs.collapse', function () {
+			$('#collapse-header i').addClass('rotate-arrow');
+		});
+		$('#collapse_1').on('show.bs.collapse', function () {
+			$('#collapse-header i').removeClass('rotate-arrow');
+		});
+	});
+</script>
+
 
 {% endblock %}
