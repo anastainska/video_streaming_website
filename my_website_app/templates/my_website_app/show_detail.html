@@ -4,6 +4,28 @@
 
 {% block content %}
 
+<style>
+    select {
+        cursor: pointer;
+        font-weight: 500;
+        color: #fff;
+        background-color: #57adee;
+        ;
+        border-color: #3167eb;
+        ;
+        border: 1px solid transparent;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        border-left-color: transparent;
+        padding: 0.55rem 0.85rem;
+        border-radius: 0.37rem;
+        font-family: "Inter", Arial, "Helvetica Neue", "Segoe UI", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        font-weight: 500;
+
+    }
+</style>
+
 <section class="section-content padding-y bg">
     <div class="container">
         <div class="card">
@@ -11,13 +33,13 @@
                 <aside class="col-md-6">
                     <article class="gallery-wrap">
                         <div class="img-big-wrap">
-                            <a href="#"><img src="{{ show.poster.url}}"></a>
+                            <a href="#"><img src="{{ show.poster.url }}"></a>
                         </div>
                     </article>
                 </aside>
                 <main class="col-md-6 border-left">
                     <article class="content-body">
-                        <h2 class="title">{{ show.title}}</h2>
+                        <h2 class="title">{{ show.title }}</h2>
                         <div class="rating-star">
                             <span>
                                 <i class="fa fa-star{% if show.average_review < 0.5 %}-o{% elif show.average_review >= 0.5 and show.average_review < 1 %}-half-o {% endif %}"
@@ -37,7 +59,6 @@
                         <div class="mb-3">
                             <var class="price h4">{{ show.year }}</var>
                         </div>
-
                         <p>{{ show.description }}</p>
                         {% if request.user.is_authenticated %}
                         {% if show in favourites_folder.favourites.all %}
@@ -58,14 +79,55 @@
             </div>
         </div>
         <br>
-        <div class="text-center">
-            <video width='854' height='480' controls>
-                <source src="{{ show.video.url }}" type='video/mp4'>
+
+        {% if show.is_tv_show %}
+        <select id="season-selector" onchange="updateEpisodes();">
+            {% for season in seasons %}
+            <option value="{{ season.id }}" {% if season == selected_season %} selected {% endif %}>
+                Season {{ season.season_number }}
+            </option>
+            {% endfor %}
+        </select>
+
+
+        {% if episodes %}
+        <select id="episode-selector" onchange="updateVideo();">
+            {% for episode in episodes %}
+            <option value="{{ episode.id }}" data-video-url="{{ episode.video.url }}" {% if episode == selected_episode %}
+                selected {% endif %}>
+                Episode {{ episode.episode_number }}: {{ episode.title }}
+            </option>
+            {% endfor %}
+        </select>
+        <p></p>
+
+        <!-- Video Player -->
+        <div class="video-container text-center">
+            <video id="video-player" width='854' height='480' controls>
+                {% if selected_episode %}
+                <source src="{{ selected_episode.video.url }}" type="video/mp4">
+                {% else %}
+                <source src="{{ episodes.first.video.url }}" type="video/mp4">
+                {% endif %}
                 Your browser does not support the video tag.
             </video>
         </div>
+        {% else %}
+        <p>No episodes available for this season.</p>
+        {% endif %}
+        {% elif show.is_movie and show.video %}
+        <!-- Movie: Display the video directly -->
+        <div class="video-container text-center">
+            <video width='854' height='480' controls>
+                <source src="{{ show.video.url }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        {% else %}
+        <p>No video content available.</p>
+        {% endif %}
 
-        <p></p>
+
         <div class="row">
             <div class="col-md-9">
                 <form action="{% url 'submit_review' show.id %}" method="POST">
@@ -98,35 +160,30 @@
                                 title="0.5" class="half"></label>
                         </div>
                         <br>
-
                         Review Title:
                         <input type="text" class="form-control" name="subject" required>
                         <br>
                         Review:
                         <textarea name="review" rows="4" class="form-control"></textarea>
                         <br>
-
                         <input type="submit" value="Submit Review" class="btn btn-primary">
                         {% else %}
-                        <p>You must be logged in to post a review. <span><a href="{% url 'login' %}">Login
-                                    now</a></span></p>
+                        <p>You must be logged in to post a review. <a href="{% url 'login' %}">Login now</a></p>
                         {% endif %}
                     </div>
+                    <br>
                     {% include 'includes/alerts.html' %}
                 </form>
                 <br>
-
-            </div>
-            <header class="section-heading">
-                <h3>Customer Reviews </h3>
+                {% if reviews %}
+                <!-- Customer Reviews should be under Submit Review -->
+                <h3>Customer Reviews</h3>
                 {% for review in reviews %}
-
                 <article class="box mb-3">
                     <div class="icontext w-100">
-
                         <div class="text">
-                            <span class="date text-muted float-md-right">{{review.updated_at}} </span>
-                            <h6 class="mb-1">{{review.user.username}} </h6>
+                            <span class="date text-muted float-md-right">{{ review.updated_at }}</span>
+                            <h6 class="mb-1">{{ review.user.username }}</h6>
                             <div class="rating-star">
                                 <span>
                                     <i class="fa fa-star{% if review.rating == 0.5 %}-half-o{% elif review.rating < 1 %}-o {% endif %}"
@@ -144,16 +201,44 @@
                         </div>
                     </div>
                     <div class="mt-3">
-                        <h6>{{review.subject}}</h6>
-                        <p>
-                            {{review.review}}
-                        </p>
+                        <h6>{{ review.subject }}</h6>
+                        <p>{{ review.review }}</p>
                     </div>
                 </article>
                 {% endfor %}
-            </header>
+                {% endif %}
+            </div>
         </div>
     </div>
 </section>
+
+<script>
+    function updateEpisodes() {
+        const seasonId = document.getElementById('season-selector').value;
+        fetch(`/api/episodes/${seasonId}/`)
+            .then(response => response.json())
+            .then(data => updateEpisodeDropdown(data.episodes));
+    }
+
+    function updateEpisodeDropdown(episodes) {
+        const episodeSelector = document.getElementById('episode-selector');
+        episodeSelector.innerHTML = '';  // Clear existing options
+        episodes.forEach(episode => {
+            const option = new Option(episode.title, episode.id);
+            option.dataset.videoUrl = episode.video_url;
+            episodeSelector.appendChild(option);
+        });
+        updateVideo();  // Update the video player with the first episode from the new list
+    }
+
+    function updateVideo() {
+        const episodeSelector = document.getElementById('episode-selector');
+        const selectedOption = episodeSelector.options[episodeSelector.selectedIndex];
+        const videoPlayer = document.getElementById('video-player');
+        const videoSource = document.querySelector('#video-player source');
+        videoSource.src = selectedOption.dataset.videoUrl;
+        videoPlayer.load();  // Reload video player to update source
+    }
+</script>
 
 {% endblock %}
