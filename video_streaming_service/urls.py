@@ -25,6 +25,7 @@ urlpatterns = [
     path('', ShowListView.as_view(), name='shows'),
     path('home/', home_screen_view, name='home_screen'),
     path('show/<int:pk>/', ShowDetail.as_view(), name='show'),
+    path('api/episodes/<int:season_id>/', get_episodes_by_season, name='api-episodes-by-season'),
     # path('show/<slug:show_slug>/', ShowDetail.as_view(), name='show'),
     path('create-show/', ShowCreate.as_view(), name='show-create'),
     path('show-update/<int:pk>/', ShowUpdate.as_view(), name='show-update'),

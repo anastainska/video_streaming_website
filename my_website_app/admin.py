@@ -21,8 +21,10 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class ShowAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('title',)}
-    list_display = ('title', 'year', 'category')
+    list_display = ['title', 'show_type', 'year', 'category']
+    list_filter = ['show_type', 'category']
+    search_fields = ['title', 'description']
+    fields = ('title', 'description', 'year', 'poster', 'category', 'show_type', 'video')
 
 
 class SubscriberProfileAdmin(admin.ModelAdmin):
@@ -41,8 +43,10 @@ class SubscriberProfileAdmin(admin.ModelAdmin):
 admin.site.register(User)
 admin.site.register(Admin)
 admin.site.register(Subscriber, SubscriberAdmin)
-admin.site.register(Show)
+admin.site.register(Show, ShowAdmin)
 admin.site.register(Folder)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(ReviewRating)
 admin.site.register(SubscriberProfile, SubscriberProfileAdmin)
+admin.site.register(Season)
+admin.site.register(Episode)

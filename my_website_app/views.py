@@ -5,10 +5,10 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth import logout
 from django.core.paginator import Paginator
-from .models import Show, Folder, Category
+from .models import Show, Folder, Category, Episode
 from .forms import *
 from django.contrib import messages, auth
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 
 # Verification email
@@ -19,14 +19,14 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
 
+import logging
+
 
 # Create your views here.
 
 def home_screen_view(request):
-    logo_object = Logo.objects.first()  # Assuming you have only one logo
-    context = {'logo_object': logo_object}
-    return render(request, 'base.html', context)
-
+    print(request.headers)
+    return render(request, 'base.html', {})
 
 
 def movies(request, category_slug=None):
@@ -36,13 +36,13 @@ def movies(request, category_slug=None):
     if category_slug is not None:
         categories = get_object_or_404(Category, slug=category_slug)
         shows = Show.objects.filter(category=categories)
-        paginator = Paginator(shows, 6)
+        paginator = Paginator(shows, 5)
         page = request.GET.get('page')
         paged_shows = paginator.get_page(page)
         show_count = shows.count
     else:
         shows = Show.objects.all()
-        paginator = Paginator(shows, 2)
+        paginator = Paginator(shows, 5)
         page = request.GET.get('page')
         paged_shows = paginator.get_page(page)
         show_count = shows.count()
@@ -98,7 +98,7 @@ def registration_view(request):
             send_email = EmailMessage(mail_subject, message, to=[to_email])
             send_email.send()
             # messages.success(request, 'Please check your email for a verification link.')
-            return redirect('/login/?command=verification&email='+email)
+            return redirect('/login/?command=verification&email=' + email)
     else:
         form = RegistrationForm()
     context = {
@@ -133,9 +133,13 @@ def account_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    context = {}
+    user_profile = get_object_or_404(SubscriberProfile, user=request.user)
 
-    if request.POST:
+    context = {
+        'user_profile': user_profile,
+    }
+
+    if request.method == 'POST':
         form = AccountUpdateForm(request.POST, instance=request.user)
         if form.is_valid():
             form.initial = {
@@ -285,7 +289,7 @@ def change_password(request):
 
 def submit_review(request, show_id):
     url = request.META.get('HTTP_REFERER')
-    if request.method =='POST':
+    if request.method == 'POST':
         try:
             reviews = ReviewRating.objects.get(user__id=request.user.id, show__id=show_id)
             form = ReviewForm(request.POST, instance=reviews)
@@ -344,7 +348,7 @@ class ShowListView(ListView):
 class ShowDetail(DetailView):
     model = Show
     context_object_name = 'show'
-    template_name = 'show_detail.html'  # Replace with the actual template name
+    template_name = 'show_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -361,10 +365,50 @@ class ShowDetail(DetailView):
         else:
             favourites_folder = None
 
-        # Pass the 'Favourites' folder to the template
         context['favourites_folder'] = favourites_folder
 
+        if show.show_type == 'tv_show':
+            seasons = show.seasons.all()
+            selected_season = None
+            episodes = None
+            video_url = None
+
+            if seasons:
+                selected_season = seasons.first()  # Default to the first season
+                season_id = self.request.GET.get('season_id')
+                if season_id:
+                    selected_season = seasons.filter(id=season_id).first()
+                if selected_season:
+                    episodes = selected_season.episodes.all()
+                    if episodes:
+                        selected_episode = episodes.first()  # Default to the first episode
+                        episode_id = self.request.GET.get('episode_id')
+                        if episode_id:
+                            selected_episode = episodes.filter(id=episode_id).first()
+                        if selected_episode:
+                            video_url = selected_episode.video.url
+
+            context.update({
+                'seasons': seasons,
+                'selected_season': selected_season,
+                'episodes': episodes if selected_season else None,
+                'video_url': video_url,
+            })
+        elif show.show_type == 'movie' and show.video:
+            # Assuming movies have a direct video file assigned in 'video' field
+            context['video_url'] = show.video.url
+
         return context
+
+
+def get_episodes_by_season(request, season_id):
+    episodes = Episode.objects.filter(season_id=season_id).order_by('episode_number')
+    episode_data = [{
+        'id': episode.id,
+        'title': f"Episode {episode.episode_number}: {episode.title}",
+        'video_url': episode.video.url
+    } for episode in episodes]
+    return JsonResponse({'episodes': episode_data})
 
 
 class ShowCreate(CreateView):

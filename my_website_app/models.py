@@ -107,23 +107,26 @@ class Category(models.Model):
 
 
 class Show(models.Model):
-    title = models.CharField(max_length=500, null=True, blank=True)
-    year = models.IntegerField(null=False, blank=False)
-    description = models.CharField(max_length=500, null=True, blank=True)
+    TYPE_CHOICES = (
+        ('movie', 'Movie'),
+        ('tv_show', 'TV Show'),
+    )
+    title = models.CharField(max_length=500)
+    description = models.TextField(null=True, blank=True)
+    year = models.IntegerField(null=True, blank=True)
     poster = models.ImageField(upload_to='images/shows', blank=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    video = models.FileField(upload_to='videos', null=True)
-
-    def save(self, *args, **kwargs):
-        if not self.id:
-            # Get the maximum value of the id field and add 1
-            max_id = Show.objects.all().aggregate(Max('id'))['id__max'] or 0
-            self.id = max_id + 1
-
-        super().save(*args, **kwargs)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="shows")
+    show_type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='movie')
+    video = models.FileField(upload_to='videos', blank=True, null=True)  # Used only for movies
 
     def __str__(self):
         return self.title
+
+    def is_movie(self):
+        return self.show_type == 'movie'
+
+    def is_tv_show(self):
+        return self.show_type == 'tv_show'
 
     def average_review(self):
         reviews = ReviewRating.objects.filter(show=self, status=True).aggregate(average=Avg('rating'))
@@ -138,6 +141,24 @@ class Show(models.Model):
         if reviews['count'] is not None:
             count = int(reviews['count'])
         return count
+
+
+class Season(models.Model):
+    show = models.ForeignKey(Show, on_delete=models.CASCADE, related_name="seasons")
+    season_number = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.show.title} - Season {self.season_number}"
+
+
+class Episode(models.Model):
+    season = models.ForeignKey(Season, on_delete=models.CASCADE, related_name="episodes")
+    title = models.CharField(max_length=250)
+    episode_number = models.IntegerField()
+    video = models.FileField(upload_to='videos')
+
+    def __str__(self):
+        return f"{self.season.show.title} - S{self.season.season_number}E{self.episode_number} {self.title}"
 
 
 class Folder(models.Model):
