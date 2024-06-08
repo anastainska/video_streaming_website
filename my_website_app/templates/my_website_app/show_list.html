@@ -3,6 +3,25 @@
 {% block content %}
 
 <style>
+	html,
+	body {
+		height: 100%;
+		margin: 0;
+		padding: 0;
+	}
+
+	body {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.container {
+		flex: 1;
+	}
+
+	.footer-container {
+		margin-top: auto;
+	}
   .custom-row {
     margin-left: -15px;
     margin-right: -15px;
@@ -38,7 +57,7 @@
         <img class="card-img-top" src="{{ show.poster.url }}" alt="{{ show.title }} Poster">
         <div class="card-body">
           <h5 class="card-title"><a href="{% url 'show' show.id %}">{{ show.title }}</a></h5>
-          <p class="card-text">{{ show.year }}</p>
+          <p class="card-text">{{ show.description }}</p>
         </div>
       </div>
     </div>

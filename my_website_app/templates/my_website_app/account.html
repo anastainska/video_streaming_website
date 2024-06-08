@@ -3,29 +3,37 @@
 {% block content %}
 
 <style>
-	html,
-	body {
-		height: 100%;
-		margin: 0;
-		padding: 0;
-	}
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
 
-	body {
-		display: flex;
-		flex-direction: column;
-	}
+    body {
+        display: flex;
+        flex-direction: column;
 
-	.container {
-		flex: 1;
-	}
+    }
 
-	.footer-container {
-		margin-top: auto;
-	}
+    .container {
+        flex: 1;
+    }
+
+    .section-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+		background-color: white;
+    }
+
+    .footer-container {
+        margin-top: auto;
+    }
 </style>
 
 <div class="container">
-	<section class="section-conten padding-y bg">
+	<section class="section-conten padding-y">
 		{% include 'includes/alerts.html' %}
 		<div class="row">
 			{% include 'includes/account_sidebar.html' %}
@@ -47,8 +55,7 @@
 										<p>No profile picture available</p>
 										{% endif %}
 										<br><br>
-										<p class="mb-0"
-											style="font-family: 'Times New Roman', serif; text-shadow: 2px 2px 4px #333;">
+										<p class="mb-0">
 											{{ user.email }}</p>
 									</div>
 								</div>
